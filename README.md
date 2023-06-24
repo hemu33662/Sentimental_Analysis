@@ -1,6 +1,9 @@
 # Sentimental_Analysis
 Sentiment analysis is the automated process of identifying and classifying subjective information in text data. This might be an opinion, a judgment, or a feeling about a particular topic or product feature. In this sentiment analysis, the most common type is ‘polarity detection’, which involves classifying statements as positive, negative, or neutral. It is a tool that automatically monitors emotions in conversations on social media platforms.
 
+## Flow Graph
+![Flow Graph](SentimentalAnalysis.png)
+
 Pre-requisites
 --------------
 
