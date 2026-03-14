@@ -1,8 +1,12 @@
-# Sentimental_Analysis
-Sentiment analysis is the automated process of identifying and classifying subjective information in text data. This might be an opinion, a judgment, or a feeling about a particular topic or product feature. In this sentiment analysis, the most common type is ‘polarity detection’, which involves classifying statements as positive, negative, or neutral. It is a tool that automatically monitors emotions in conversations on social media platforms.
+# Sentiment Analysis Report
 
-## Flow Graph
-![Flow Graph](SentimentalAnalysis.png)
+## Abstract
+Sentiment analysis plays a crucial role in Natural Language Processing (NLP) by classifying text into positive or negative sentiments. This project presents a study on sentiment classification using **Support Vector Machine (SVM)**, **Optimized SVM Pipeline**, **Naïve Bayes (NB)**, and **Multinomial Naïve Bayes (MultinomialNB)** classifiers. The models are trained on a labeled dataset of customer reviews and evaluated based on accuracy and confusion matrices.
+
+
+## Introduction
+Sentiment analysis is a key technique in NLP, widely used in **customer feedback systems, social media analysis, and brand monitoring**. The objective of this study is to compare the effectiveness of different classification models for sentiment analysis. The dataset comprises **customer reviews labeled as positive (1) or negative (0)**.
+
 
 Pre-requisites
 --------------
@@ -10,50 +14,108 @@ Pre-requisites
 - Python
 - Machine Learing
 
-## STEPS
+## Architecture
+![Sentiment Analysis Architecture](SentimentalAnalysis.png)
 
-- Read the Data frame: it means importing the already classified data frame to train and test the 
-model.
+1. **Data Collection**: Customer reviews dataset.
+2. **Preprocessing**: Text cleaning, tokenization, and vectorization.
+3. **Feature Extraction**: TF-IDF and CountVectorizer.
+4. **Model Training**: SVM, Optimized SVM Pipeline, Naïve Bayes, and Multinomial Naïve Bayes.
+5. **Evaluation**: Accuracy and confusion matrices.
 
-- Data Analysis: it means to find majority customers are positive or negative and finding the most 
-used keywords.
+## Data Preprocessing
+- **Data Splitting**: 80% training, 20% testing (`train_test_split`).
+- **Text Vectorization**:
+  - **TF-IDF** (`max_features=5000`) for SVM and Naïve Bayes.
+  - **CountVectorizer** for Multinomial Naïve Bayes.
 
-- Classifying Tweets: it means we will classify reviews into “positive” and “negative,” so we can 
-use this as training data for our sentiment classification model.
+## Methodology
+### **Model Architectures**
+#### **Support Vector Machine (SVM)**
+- Uses `SVC()` for binary classification.
+- Standard SVM and optimized SVM with `C=1, kernel='rbf'`.
+- Implemented within a pipeline using `make_pipeline()`.
 
-- Building the Model: we can build the sentiment analysis model. This model will take reviews in 
-as input. It will then come up with a prediction on whether the review is positive or negative. For 
-this we will split the data frame into train and test set of 80% and 20% respectively.
+#### **Optimized SVM Pipeline**
+- Utilizes `Pipeline()` to integrate TF-IDF and SVM.
+- Fine-tuned with `C=1, kernel='rbf'` for improved classification.
 
-- Next, we will use a count vectorizer from the Scikit-learn library. This will transform the text in 
-our data frame into a bag of words model, which will contain a sparse matrix of integers. The 
-number of occurrences of each word will be counted and printed.
+#### **Naïve Bayes (MultinomialNB)**
+- Implemented with both **TF-IDF and CountVectorizer** features.
+- Uses `Naïve Bayes()` for probability-based classification.
 
-- Then we will train the model. Here we used the 4 methods SVM, Pipeline, Naive Bayes, and 
-Multinomial NB to train and predict the output for the test set.
+#### **Multinomial Naïve Bayes (CountVectorizer)**
+- A variation of Naïve Bayes using `CountVectorizer()`.
+- Implemented with `MultinomialNB()` classifier.
 
-- Now we will find the accuracy of the model and can use the model to classify the given text to 
-positive or negative
-## Benefits
+### **Training Process**
+1. **TF-IDF and CountVectorizer preprocessing** for feature extraction.
+2. **Model training** using training datasets.
+3. **Performance evaluation** using accuracy and confusion matrices.
 
-1. Understanding Customer Feelings: Sentiment analysis helps businesses understand how customers feel about their products, services, or brand. It identifies whether opinions are positive, negative, or neutral, providing valuable insights into customer satisfaction and preferences.
+## Experimental Results
+### **Support Vector Machine (SVM)**
+- Standard SVM was trained using `SVC()`.
+- Model Accuracy: **0.755**.
 
-2. Improved Decision Making: By analyzing sentiments in customer feedback and social media conversations, businesses can make data-driven decisions to enhance their offerings, address customer concerns, and improve overall customer experience.
+### **Optimized SVM Pipeline**
+- A pipeline was used with **TF-IDF vectorizer and `SVC(C=1, kernel='rbf')`**.
+- Accuracy: **0.77**.
 
-3. Real-Time Monitoring: Sentiment analysis enables real-time monitoring of customer sentiments. This helps businesses stay updated on customer opinions and promptly respond to any issues or emerging trends.
+### **Naïve Bayes (TF-IDF)**
+- Model trained using `Naïve Bayes()` with TF-IDF features.
+- Accuracy: **0.775**.
 
-4. Reputation Management: Monitoring sentiment allows businesses to manage their brand reputation effectively. By addressing negative sentiments and resolving customer issues, companies can maintain a positive image and strengthen customer relationships.
+### **Multinomial Naïve Bayes (CountVectorizer)**
+- Model trained using `MultinomialNB()` with CountVectorizer.
+- Accuracy: **0.81**.
 
-5. Competitive Analysis: Sentiment analysis can be used to analyze sentiments related to competitors' products or services. This helps businesses gain insights into their strengths, weaknesses, and customer perceptions, enabling them to differentiate their offerings and develop effective marketing strategies.
+## Performance Comparison
+| Model                          | Accuracy  |
+|--------------------------------|-----------|
+| Standard SVM                   | 0.755     |
+| Optimized SVM Pipeline         | 0.77      |
+| Naïve Bayes                    | 0.775     |
+| Multinomial Naïve Bayes        | 0.81      |
 
-6. Crisis Detection and Response: Sentiment analysis aids in detecting and managing potential crises by monitoring public sentiment. It allows businesses to identify and address negative sentiments quickly, minimizing the impact on their brand and reputation.
+## Confusion Matrices
+Confusion matrices for each model are presented below:
 
-7. Social Listening: Sentiment analysis facilitates social listening, helping businesses track and evaluate customer responses to specific campaigns, events, or promotions. It enables the assessment of campaign success and provides valuable feedback for future improvements.
+1. **SVM**  
+   ![SVM Confusion Matrix](images/svm_confusion_matrix.png)
 
-In simple terms, sentiment analysis helps businesses understand customer feelings, make better decisions, monitor sentiments in real time, manage their reputation, analyze competition, detect and respond to crises, and listen to customer feedback for improved marketing efforts.
+2. **Optimized SVM Pipeline**  
+   ![Optimized SVM Confusion Matrix](images/optimized_svm_confusion_matrix.png)
+
+3. **Naïve Bayes (TF-IDF)**  
+   ![Naïve Bayes Confusion Matrix](images/naive_bayes_confusion_matrix.png)
+
+4. **Multinomial Naïve Bayes (CountVectorizer)**  
+   ![Multinomial NB Confusion Matrix](images/multinomial_nb_confusion_matrix.png)
+
+## Conclusion and Future Work
+- **Optimized SVM** performed better than the **Standard SVM**, demonstrating the impact of hyperparameter tuning.
+- **Naïve Bayes with TF-IDF** performed well, but **Multinomial Naïve Bayes with CountVectorizer** provided slightly different results.
+- **Future Enhancements**:
+  - **Hyperparameter tuning** for SVM and Naïve Bayes.
+  - **Deep learning models** such as LSTMs or transformers for improved accuracy.
+  - **Expanding the dataset** for better generalization.
+
+## References
+(Add relevant research references here.)
+
+This study establishes a strong baseline for sentiment classification and suggests further enhancements using feature engineering and deep learning.
+
+## Demo
+
+- Name : User
+- Password: password
+
+[Sentiment-analysis](http://152.67.165.231:8000/)
 
 
 
 ## Authors
 
 - [@hemu33662](https://github.com/hemu33662)
+
