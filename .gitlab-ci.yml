@@ -1,0 +1,127 @@
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/pipeline/#customization
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+# Run formatting tools with forced overwrites
+    # - python -m autoflake --in-place --remove-unused-variables --remove-all-unused-imports -r .
+    # - python -m autopep8 --recursive --in-place --aggressive --aggressive .
+    # - python -m black --fast .
+    # - python -m isort --profile black .
+
+image: python:3.11
+
+stages:
+  - setup
+  - security_scan
+  - test
+  - build
+  - push
+  - deploy
+
+variables:
+  IMAGE_NAME: hemu33662/sentiment-analysis
+  TAG: latest
+  DOCKER_HOST: tcp://docker:2375/
+
+setup:
+  stage: setup
+  script:
+    - python --version
+    - python -m pip install --upgrade pip  
+    - python -m pip install -r requirements.txt  
+    - python -m pip install django flake8        
+  tags:
+    - linux
+    - oracle
+
+security_scan:
+  stage: security_scan
+  before_script:
+  - set -e  
+  - export PATH=$HOME/.local/bin:$PATH  
+  - npm config set prefix ~/.npm-global
+  - export PATH=~/.npm-global/bin:$PATH
+  - if ! command -v snyk &> /dev/null; then npm install -g snyk; fi
+  - python -m pip install --user --no-cache-dir -U pip setuptools wheel
+  - python -m pip install --user --no-cache-dir bandit safety
+  - curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh
+  - chmod +x ./bin/trivy
+  - export PATH=$PWD/bin:$PATH
+  - trivy --version 
+  script:
+    - bandit -r . -x .venv/ --format json --output bandit_report.json --exit-zero
+    - safety check --full-report || true
+    - trivy image --format json --output trivy_report.json python:3.9 || true
+    - snyk auth $SNYK_API_TOKEN || true
+    - snyk test --all-projects --json > snyk_report.json || true
+  artifacts:
+    when: always
+    paths:
+      - bandit_report.json
+      - trivy_report.json
+      - snyk_report.json
+  tags:
+    - linux
+    - oracle
+
+
+test:
+  stage: test
+  before_script:
+    - export PATH="$HOME/.local/bin:$PATH" 
+  script:
+    - python BACKEND/manage.py test  
+    - flake8 .  
+  tags:
+    - linux
+    - oracle
+
+build:
+  stage: build
+  image: docker:24
+  variables:
+    DOCKER_HOST: "unix:///var/run/docker.sock"
+  before_script:
+    - docker --version || echo "Docker is missing!"
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  script:
+    - docker build -t hemu33662/sentiment-analysis:latest .
+  tags:
+    - linux
+    - oracle
+
+push:
+  stage: build
+  image: docker:24
+  variables:
+    DOCKER_HOST: "unix:///var/run/docker.sock"
+  before_script:
+    - docker --version || echo "Docker is missing!"
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  script:
+    - docker push hemu33662/sentiment-analysis:latest
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  tags:
+    - linux
+    - oracle
+
+deploy:
+  stage: deploy
+  variables:
+    DOCKER_HOST: "unix:///var/run/docker.sock"
+  before_script:
+    - docker --version || echo "Docker is missing!"
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  script:
+    - bash BACKEND/deploy.sh
+    - docker pull hemu33662/sentiment-analysis:latest
+    - docker run -p 8000:8000 -d hemu33662/sentiment-analysis:latest 
+  only:
+    - main
+  tags:
+    - linux
+    - oracle
