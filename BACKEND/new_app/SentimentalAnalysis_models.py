@@ -11,9 +11,7 @@ LOADS_DIR = os.path.join(ROOT_DIR, "Sentimental_Analysis_Loads")
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-print("########### model ##########")
-
-print("#####################")
+# Avoid noisy prints in production logs.
 svm_model = joblib.load(
     os.path.join(LOADS_DIR, "Sentimental_Analysis_svm_model.pkl")
 )
@@ -34,6 +32,27 @@ tfidf_vect = joblib.load(
 
 def preprocess_text(text):
     return tfidf_vect.transform([text])
+
+
+def _prediction_to_sentiment(prediction) -> str:
+    """
+    Convert various model output formats into a stable 'Positive'/'Negative' string.
+    """
+    try:
+        first = prediction[0]
+    except Exception:
+        first = prediction
+
+    first_str = str(first).strip().lower()
+
+    # Common numeric + label formats across scikit + custom models
+    if first in (1, "1") or first_str in {"label_1", "positive"}:
+        return "Positive"
+    if first in (0, "0") or first_str in {"label_0", "negative"}:
+        return "Negative"
+
+    # Fallback: treat unknown labels as Negative (safer than crashing)
+    return "Negative"
 
 
 def predict_sentiment(text, algo):
@@ -61,38 +80,53 @@ def predict_sentiment(text, algo):
                 if hf_token:
                     headers["Authorization"] = f"Bearer {hf_token}"
                 
-                response = requests.post(API_URL, headers=headers, json={"inputs": text})
+                # Add a timeout so external calls can't hang indefinitely.
+                response = requests.post(
+                    API_URL,
+                    headers=headers,
+                    json={"inputs": text},
+                    timeout=15,
+                )
                 
                 if response.status_code != 200:
-                    return f"API Error: {response.json()}"
+                    return "API Error"
                 
                 # Hugging Face returns a list of dictionaries. Sort or find the highest score.
-                predictions = response.json()[0]
-                best_pred = max(predictions, key=lambda x: x['score'])
+                try:
+                    predictions = response.json()[0]
+                    best_pred = max(predictions, key=lambda x: x["score"])
+                except Exception:
+                    return "API Error"
                 
                 # We assume the user's custom model outputs 'LABEL_1' (positive) or 'LABEL_0' (negative), 
                 # or 'positive'/'negative'
-                label = best_pred['label'].lower()
-                return "Positive" if label in ['label_1', 'positive', '1'] else "Negative"
+                label = str(best_pred.get("label", "")).lower()
+                return "Positive" if label in ["label_1", "positive", "1"] else "Negative"
 
-        except Exception as e:
-            return f"Custom LLM Error: {e}"
+        except Exception:
+            # Never leak exception details to clients.
+            return "Custom LLM Error"
 
-    text_vectorized = preprocess_text(text)
+    try:
+        text_vectorized = preprocess_text(text)
 
-    if algo == "SVM":
-        prediction = svm_model.predict(text_vectorized)
-    elif algo == "SVM_Pipeline":
-        prediction = svc_pipeline_model.predict(
-            [text]
-        )
-    elif algo == "NaiveBayes":
-        prediction = naivebayes_model.predict(text_vectorized)
-    elif algo == "MultinomialNB":
-        prediction = multinomialnb_model.predict(
-            [text]
-        )
-    else:
-        return "Invalid Algorithm Selected"
+        if algo == "SVM":
+            prediction = svm_model.predict(text_vectorized)
+        elif algo == "SVM_Pipeline":
+            prediction = svc_pipeline_model.predict([text])
+        elif algo == "NaiveBayes":
+            prediction = naivebayes_model.predict(text_vectorized)
+        elif algo == "MultinomialNB":
+            # Keep consistent with other vectorizer-based models.
+            # If the saved model expects raw text, fall back to raw input.
+            try:
+                prediction = multinomialnb_model.predict(text_vectorized)
+            except Exception:
+                prediction = multinomialnb_model.predict([text])
+        else:
+            return "Invalid Algorithm Selected"
 
-    return "Positive" if prediction[0] == 1 else "Negative"
+        return _prediction_to_sentiment(prediction)
+    except Exception:
+        # Prevent `/output` from returning 500 due to model exceptions.
+        return "Model Error"

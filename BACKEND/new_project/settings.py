@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 import os
+import warnings
 from pathlib import Path
 
 
@@ -20,16 +21,30 @@ BACKEND_DIR = BASE_DIR
 
 SECRET_KEY = os.environ.get(
     "SECRET_KEY",
-    "(s%_dvdtz%fnqe%u-$r%ztew7ofu4-102%*!=c_((#f5*)((84",
+    "",
 )
 
 DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() == "true"
 
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
+if not SECRET_KEY:
+    SECRET_KEY = "insecure-dev-key"
+    if not DEBUG:
+        warnings.warn(
+            "SECRET_KEY is not set; using an insecure default. Set SECRET_KEY in Render."
+        )
+
+
+render_hostname = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+local_hosts = ["localhost", "127.0.0.1"]
+default_hosts = local_hosts
+if render_hostname:
+    default_hosts = [render_hostname, f"www.{render_hostname}"] + local_hosts
+
+env_allowed = os.environ.get("ALLOWED_HOSTS", "").strip()
+ALLOWED_HOSTS = [h.strip() for h in env_allowed.split(",") if h.strip()] if env_allowed else default_hosts
 
 CSRF_TRUSTED_ORIGINS = []
-render_hostname = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 if render_hostname:
     CSRF_TRUSTED_ORIGINS.append(f"https://{render_hostname}")
 
@@ -122,3 +137,24 @@ STATICFILES_DIRS = [BACKEND_DIR / "static"]
 STATIC_ROOT = BACKEND_DIR / "staticfiles"
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# Security hardening
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+
+SECURE_SSL_REDIRECT = not DEBUG
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
+
+SECURE_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = SECURE_COOKIE_SECURE
+CSRF_COOKIE_SECURE = SECURE_COOKIE_SECURE
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"
