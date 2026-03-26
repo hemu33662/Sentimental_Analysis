@@ -5,7 +5,10 @@ from django.contrib.auth.hashers import check_password, identify_hasher
 import logging
 from pathlib import Path
 from django.views.decorators.http import require_http_methods
-from pathlib import Path
+from django.shortcuts import render
+from .SentimentalAnalysis_models import predict_sentiment
+
+logger = logging.getLogger(__name__)
 
 ROOT_DIR = Path(__file__).resolve().parent.parent  # STOP here
 ACCOUNT_FILE_PATH = ROOT_DIR / "account.txt"
