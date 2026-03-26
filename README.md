@@ -12,7 +12,7 @@ Pre-requisites
 --------------
 
 - Python
-- Machine Learing
+- Machine Learning
 
 ## Architecture
 ![Sentiment Analysis Architecture](SentimentalAnalysis.png)

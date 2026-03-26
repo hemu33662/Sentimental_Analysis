@@ -1,0 +1,9 @@
+# Gitignore for Sentiment Analysis
+results/
+Sentimental_Analysis_Loads/custom_llm_model/
+__pycache__/
+*.pyc
+
+# Virtual Environment
+venv/
+.env
