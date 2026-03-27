@@ -8,7 +8,9 @@ services:
     startCommand: "cd BACKEND && gunicorn new_project.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
-        value: 3.9.0
+        value: 3.11.0
+      - key: RENDER
+        value: "true"
       - key: SECRET_KEY
         sync: false
       - key: HF_MODEL_URL
