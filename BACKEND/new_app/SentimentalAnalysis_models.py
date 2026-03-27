@@ -98,7 +98,7 @@ def predict_sentiment(text, algo):
             
             if is_render:
                 import requests
-                API_URL = os.environ.get("HF_MODEL_URL", "https://api-inference.huggingface.co/models/cardiffnlp/twitter-roberta-base-sentiment-latest")
+                API_URL = os.environ.get("HF_MODEL_URL", "https://router.huggingface.co/hf-inference/models/HemanthNasaram/restaurant-sentiment-model")
                 headers = {}
                 hf_token = os.environ.get("HF_TOKEN")
                 if hf_token:
