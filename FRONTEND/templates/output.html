@@ -92,7 +92,7 @@
 
 <!-- Background Container -->
 <div class="bg-container">
-  <div class="bgded {% if out == 'Positive' %}positive-bg{% else %}negative-bg{% endif %}"></div>
+  <div class="bgded {% if out|upper == 'POSITIVE' %}positive-bg{% else %}negative-bg{% endif %}"></div>
 </div>
 
 <!-- Centered Output -->
@@ -100,7 +100,7 @@
     <article>
       <h3 class="heading">Predicted Review</h3>
       <footer>
-        <a class="btn {% if out == 'Positive' %}btn-positive{% else %}btn-negative{% endif %}" href="#">{{ out }}</a>
+        <a class="btn {% if out|upper == 'POSITIVE' %}btn-positive{% else %}btn-negative{% endif %}" href="#">{{ out }}</a>
       </footer>
     </article>
 </div>
