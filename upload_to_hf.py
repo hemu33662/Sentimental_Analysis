@@ -10,7 +10,7 @@ except Exception:
 
 # 1. Configuration
 username = "HemanthNasaram"  
-model_name = "restaurant-sentiment-model"
+model_name = "restaurant-sentiment-roberta"
 repo_id = f"{username}/{model_name}"
 
 # 2. Path definition
