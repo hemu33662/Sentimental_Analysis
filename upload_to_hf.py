@@ -1,13 +1,19 @@
 import os
-from huggingface_hub import HfApi
+from huggingface_hub import HfApi, login
 
-# 1. Provide your Hugging Face username and the name you want for your model
-username = "HemanthNasaram"  # Change to your actual HF username if different
+# This will prompt you for your token automatically inside the script
+print("🔑 Please login to Hugging Face:")
+try:
+    login()
+except Exception:
+    print("Could not launch login prompt. Please ensure you have huggingface_hub installed.")
+
+# 1. Configuration
+username = "HemanthNasaram"  
 model_name = "restaurant-sentiment-model"
-
 repo_id = f"{username}/{model_name}"
 
-# 2. Define the path where your locally trained model is saved
+# 2. Path definition
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SAVE_DIR = os.path.join(BASE_DIR, "Sentimental_Analysis_Loads", "custom_llm_model")
 
@@ -36,4 +42,3 @@ try:
 
 except Exception as e:
     print(f"❌ Error uploading to Hugging Face: {e}")
-    print("Make sure you are logged in to the huggingface-cli by running: huggingface-cli login")
