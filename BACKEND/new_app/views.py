@@ -85,11 +85,12 @@ def output(request):
     try:
         sentiment_result = predict_sentiment(text, algo)
     except Exception as e:
-        # Last-resort safety net to avoid leaking exception details to clients.
+        import traceback
+        traceback.print_exc() # This will show the real error in the Render dashboard!
         logger.exception("predict_sentiment failed (algo=%s)", algo)
         return HttpResponse(
-            "Server error",
-            content_type="text/plain",
+            f"Server Error Traceback: {str(e)}", 
+            content_type="text/plain", 
             status=500,
         )
 
