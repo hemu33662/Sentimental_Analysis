@@ -24,12 +24,15 @@ SECRET_KEY = os.environ.get(
     "",
 )
 
-DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() == "true"
+# Auto-detect Production vs Local using the RENDER variable we added
+IS_RENDER = os.environ.get("RENDER", "false").lower() == "true"
 
+# DEBUG defaults to True locally, False on Render
+DEBUG = os.environ.get("DJANGO_DEBUG", str(not IS_RENDER)).lower() == "true"
 
 if not SECRET_KEY:
     SECRET_KEY = "insecure-dev-key"
-    if not DEBUG:
+    if IS_RENDER:
         warnings.warn(
             "SECRET_KEY is not set; using an insecure default. Set SECRET_KEY in Render."
         )
@@ -144,7 +147,7 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 
-SECURE_SSL_REDIRECT = not DEBUG
+SECURE_SSL_REDIRECT = IS_RENDER and not DEBUG
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0

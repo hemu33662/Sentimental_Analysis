@@ -106,12 +106,45 @@ Confusion matrices for each model are presented below:
 
 This study establishes a strong baseline for sentiment classification and suggests further enhancements using feature engineering and deep learning.
 
+## Local Development
+
+To run this project on your local machine:
+
+1. **Clone the repository**:
+   ```bash
+   git clone <your-repo-url>
+   cd Sentimental_Analysis
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Run Migrations**:
+   Setup the local database:
+   ```bash
+   cd BACKEND
+   python manage.py migrate
+   ```
+
+4. **Start the Server**:
+   ```bash
+   python manage.py runserver
+   ```
+   The app will be available at [http://127.0.0.1:8000/](http://127.0.0.1:8000/).
+
+### **Project Structure**
+- `BACKEND/`: Django web server and logic.
+- `FRONTEND/`: HTML templates.
+- `Sentimental_Analysis_Loads/`: Saved model files (.pkl).
+
 ## Demo
 
-- Name : User
-- Password: password
+- **User**: User
+- **Password**: password
 
-[Sentiment-analysis](http://152.67.165.231:8000/)
+**Live URL**: [https://sentimental-analysis-whv6.onrender.com](https://sentimental-analysis-whv6.onrender.com)
 
 
 
