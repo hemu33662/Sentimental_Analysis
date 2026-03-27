@@ -10,6 +10,10 @@ services:
       - key: PYTHON_VERSION
         value: 3.9.0
       - key: SECRET_KEY
-        generateValue: true
+        sync: false
+      - key: HF_MODEL_URL
+        sync: false
+      - key: HF_TOKEN
+        sync: false
       - key: WEB_CONCURRENCY
         value: 2
