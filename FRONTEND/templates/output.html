@@ -1,77 +1,4 @@
 {% load static %}
-<!--
-<!DOCTYPE html>   
-
-Template Name: Shiphile
-Author: <a href="https://www.os-templates.com/">OS Templates</a>
-Author URI: https://www.os-templates.com/
-Copyright: OS-Templates.com
-Licence: Free to use under our free template licence terms
-Licence URI: https://www.os-templates.com/template-terms-->
-<!--
-<html lang="">-->
- <!--To declare your language - read more here: https://www.w3.org/International/questions/qa-html-language-declarations -->
-<!--<head>
-<title> SENTIMENTAL_ANALYSIS_OUTPUT </title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link href="{% static 'layout/styles/layout.css' %}" rel="stylesheet" type="text/css" media="all">
-</head>
-<center>
-<body id="top">-->
-<!-- ################################################################################################ -->
-<!-- ################################################################################################ -->
-<!-- ################################################################################################ -->
-<!-- Top Background Image Wrapper -->
-  <!-- ################################################################################################ -->
-  
-  <!-- ################################################################################################ -->
-  <!-- ################################################################################################ -->
-  
-  <!-- ################################################################################################ -->
- <!-- <div id="pageintro" class="hoc clear"> -->
-    <!-- ################################################################################################ -->
-  <!--  <article><br>
-<br>
-<br>
-<br>
-
-      <h3 class="heading">  Predicted Sentance   </h3>
-      
-      <footer><a class="btn" href="#">{{out}}</a></footer>
-    </article>-->
-    <!-- ################################################################################################ -->
- <!-- </div>-->
-  <!-- ################################################################################################ -->
-<!--</div>-->
-<!-- End Top Background Image Wrapper -->
-<!-- ################################################################################################ -->
-<!-- ################################################################################################ -->
-<!-- ################################################################################################ -->
-
-<!-- ################################################################################################ -->
-<!-- ################################################################################################ -->
-
-
-
-<!-- ################################################################################################ -->
-
-<!-- ################################################################################################ -->
-
-<!-- ################################################################################################ -->
-<!-- 
-<a id="backtotop" href="#top"><i class="fas fa-chevron-up"></i></a>
-
-<script src="{% static 'layout/scripts/jquery.min.js' %}"></script>
-<script src="{% static 'layout/scripts/jquery.backtotop.js' %}"></script>
-<script src="{% static 'layout/scripts/jquery.mobilemenu.js' %}"></script>
-</body>
-</center>
-</html>
-
--->
-{% load static %}
-
 <!DOCTYPE html>   
 <html lang="en">
 <head>
@@ -91,7 +18,6 @@ Licence URI: https://www.os-templates.com/template-terms-->
     z-index: -1;
   }
 
-  
   .bgded {
     width: 100%;
     height: 100%;
@@ -132,22 +58,7 @@ Licence URI: https://www.os-templates.com/template-terms-->
     display: inline-block;
     padding: 15px 40px;
     font-size: 22px;
-    color: white;
-    text-transform: uppercase;
-    text-decoration: none;
-    font-weight: bold;
-    border: 2px solid white;
-    border-radius: 10px;
-    margin-top: 20px;
-    transition: 0.3s ease-in-out;
-  }
-
-  /* Neon glowing effect on the button */
-  .btn {
-    display: inline-block;
-    padding: 15px 40px;
-    font-size: 22px;
-    color: white;
+    color: white !important;
     text-transform: uppercase;
     text-decoration: none;
     font-weight: bold;
@@ -158,25 +69,22 @@ Licence URI: https://www.os-templates.com/template-terms-->
   }
 
   .btn-positive {
-    background-color: rgba(0, 255, 100, 0.3);
-    box-shadow: 0 0 15px rgba(0, 255, 100, 0.8);
-    text-shadow: 0 0 10px rgba(0, 255, 100, 1);
+    background-color: rgba(0, 255, 100, 0.3) !important;
+    box-shadow: 0 0 15px rgba(0, 255, 100, 0.8) !important;
+    text-shadow: 0 0 10px rgba(0, 255, 100, 1) !important;
+    border-color: #00ff64 !important;
   }
 
   .btn-negative {
-    background-color: rgba(255, 0, 0, 0.3);
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
-    text-shadow: 0 0 10px rgba(255, 0, 0, 1);
+    background-color: rgba(255, 0, 0, 0.3) !important;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.8) !important;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 1) !important;
+    border-color: #ff0000 !important;
   }
 
   .btn:hover {
     transform: scale(1.1);
   }
-
-  .btn:hover {
-    transform: scale(1.1);
-  }
-
 </style>
 </head>
 
@@ -191,7 +99,9 @@ Licence URI: https://www.os-templates.com/template-terms-->
 <div id="pageintro" class="hoc clear"> 
     <article>
       <h3 class="heading">Predicted Review</h3>
-      <footer><a class="btn" href="#">{{ out }}</a></footer>
+      <footer>
+        <a class="btn {% if out == 'Positive' %}btn-positive{% else %}btn-negative{% endif %}" href="#">{{ out }}</a>
+      </footer>
     </article>
 </div>
 
@@ -204,4 +114,4 @@ Licence URI: https://www.os-templates.com/template-terms-->
 <script src="{% static 'layout/scripts/jquery.mobilemenu.js' %}"></script>
 
 </body>
-</html>
+</html>
