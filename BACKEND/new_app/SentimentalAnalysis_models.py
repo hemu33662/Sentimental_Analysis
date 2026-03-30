@@ -112,7 +112,8 @@ def predict_sentiment(text, algo):
                     if isinstance(json_data, dict) and "estimated_time" in json_data:
                         result = f"API loading... ({int(json_data['estimated_time'])}s)"
                     else:
-                        predictions = json_data[0]
+                        # Handle both nested list format [[{...}]] AND flat list format [{...}]
+                        predictions = json_data[0] if isinstance(json_data[0], list) else json_data
                         best_pred = max(predictions, key=lambda x: x["score"])
                         label = str(best_pred.get("label", "")).lower()
                         result = "Positive" if label in ["label_1", "positive", "1", "joy"] else "Negative"
